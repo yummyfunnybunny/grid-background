@@ -1,0 +1,46 @@
+/*
+=============== 
+ANCHOR Variables
+===============
+*/
+:root {
+  --background-color: hsl(0, 0%, 15%);
+  --border-radius: 25%;
+  --border-size: 2px;
+  --border-color: hsla(0, 0%, 10%, 0.5);
+  --border-type: solid;
+  --transition: all 1s ease;
+  --transition-border-size: 2px;
+  --transition-border-color: hsl(293, 95%, 71%);
+  --transition-border-type: solid;
+  /* --transition-background-color: hsl(0, 0%, 15%); */
+  --transition-background-color: hsla(293, 95%, 71%, 0.5);
+  --transition-border-radius: 50%;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.grid-background {
+  /* border: 1px solid red; */
+  width: 100%;
+  height: 100vh;
+  background: var(--background-color);
+}
+
+td {
+  border-radius: var(--border-radius);
+  border: var(--border-size) var(--border-type) var(--border-color);
+  transition: var(--transition);
+}
+
+.td-hover {
+  transform: translateY(-20%);
+  border-radius: var(--transition-border-radius);
+  background: var(--transition-background-color);
+  border: var(--transition-border-size) var(--transition-border-type)
+    var(--transition-border-color);
+}
