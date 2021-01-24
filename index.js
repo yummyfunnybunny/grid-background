@@ -1,42 +1,33 @@
 window.addEventListener("load", () => {
-  // set Changeable Variables
+  // ANCHOR -- Options List --
   const cellWidth = 50;
   const clickCellSpeed = 50; // miliseconds
   const clickCellDelay = 500; // miliseconds
   const mouveOverEffect = false;
   const clickEffect = false;
-  const randomEffect = true;
-  const waveEffect = false;
+  const randomEffect = false;
+  const waveEffect = true;
+  const randomColors = false;
 
-  //   get the number of cells to draw based on current screen width
-  const width = document.getElementById("grid-background").clientWidth;
-  const height = document.getElementById("grid-background").clientHeight;
-  const columns = Math.ceil(width / cellWidth);
-  const rows = Math.ceil(height / cellWidth);
+  // ANCHOR -- Initialize Grid --
+  let width, height, columns, rows;
+  setGridSize();
   console.log(rows, columns);
-
   CreateGrid(columns, rows);
-
-  $(window).resize(() => {
-    deleteGrid();
-    CreateGrid(columns, rows);
-  });
 
   // ANCHOR -- create grid --
   function CreateGrid(columns, rows) {
-    console.log("create grid");
-    //   select the table element
+    // Create the appropriate number of rows
     let tbl = document.getElementById("grid-background");
-
     for (let i = 0; i < rows; i++) {
       let _row = document.createElement("tr");
-      _row.id = `row${i}`; //"row" + i;
+      _row.id = `row${i}`;
       _row.width = cellWidth;
       _row.height = cellWidth;
-
       tbl.appendChild(_row);
-      let _rowWidth = document.getElementById(`row${i}`);
 
+      // Create the appropruate number of columns
+      let _rowWidth = document.getElementById(`row${i}`);
       for (let j = 0; j < columns; j++) {
         let _cell = document.createElement("td");
         _cell.classList.add(`cell-${i}-${j}`);
@@ -44,6 +35,13 @@ window.addEventListener("load", () => {
       }
     }
   }
+
+  // ANCHOR -- Window Resize --
+  window.onresize = function () {
+    deleteGrid();
+    setGridSize();
+    CreateGrid(columns, rows);
+  };
 
   //   SECTION -- Cell Event Listeners --
   const cell = document.querySelectorAll("td");
@@ -57,10 +55,10 @@ window.addEventListener("load", () => {
     //   ANCHOR -- Mouse click Effect --
     if (clickEffect) {
       el.addEventListener("click", function () {
-        console.log(el.classList[0]);
+        // console.log(el.classList[0]);
         let _cellRow = el.classList[0].split("-")[1];
         let _cellCol = el.classList[0].split("-")[2];
-        console.log(_cellRow, _cellCol);
+        // console.log(_cellRow, _cellCol);
 
         // Cells Above Clicked Cell
         for (let i = _cellRow; i >= 0; i--) {
@@ -94,6 +92,14 @@ window.addEventListener("load", () => {
 
   // SECTION -- FUNCTIONS --
 
+  // ANCHOR -- Set Grid Size --
+  function setGridSize() {
+    width = document.getElementById("grid-background").clientWidth;
+    height = document.getElementById("grid-background").clientHeight;
+    columns = Math.ceil(width / cellWidth);
+    rows = Math.ceil(height / cellWidth);
+  }
+
   //   ANCHOR -- Wave Effect --
   function waveCellEffect() {
     setTimeout(function () {
@@ -117,7 +123,7 @@ window.addEventListener("load", () => {
     setTimeout(function () {
       const _row = Math.floor(Math.random() * rows);
       const _col = Math.floor(Math.random() * columns);
-      console.log(_row, _col);
+      // console.log(_row, _col);
       const _cell = document.querySelector(`.cell-${_row}-${_col}`);
       _cell.classList.add("td-hover");
       setTimeout(function () {
@@ -136,7 +142,11 @@ window.addEventListener("load", () => {
 
   // ANCHOR -- Mouse Enter Effect --
   function mouseEnterEffect() {
+    console.log("Were here!");
     this.classList.add("td-hover");
+    const _color = `hsl(${Math.floor(Math.random() * 360)}, 95%, 71%)`;
+    console.log(_color);
+    this.style.border = `1px solid ${_color}`;
   }
 
   // ANCHOR -- Mouse Out Effect --
