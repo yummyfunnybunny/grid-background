@@ -1,12 +1,30 @@
 window.addEventListener("load", () => {
   // ANCHOR -- Options List --
-  const cellWidth = 50;
+
+  // general Options
+  const cellWidth = 200; // pixels
   const clickCellSpeed = 50; // miliseconds
   const clickCellDelay = 500; // miliseconds
+
+  // Mouseover Options
   const mouveOverEffect = false;
+
+  // Click Options
   const clickEffect = false;
-  const randomEffect = false;
-  const waveEffect = true;
+
+  // Random Options
+  const randomEffect = true;
+  const randomInterval = 0.05; // seconds
+  const randomSwell = 0.4; // seconds
+
+  // Wave Options
+  const waveEffect = false; // true/false
+  const waveInterval = 7.5; // seconds
+  const waveSwell = 0.4; // seconds
+  const waveSpeed = 0.2; // seconds
+  const waveScatter = 1; // seconds
+
+  // ColorOptions
   const randomColors = false;
 
   // ANCHOR -- Initialize Grid --
@@ -14,27 +32,6 @@ window.addEventListener("load", () => {
   setGridSize();
   console.log(rows, columns);
   CreateGrid(columns, rows);
-
-  // ANCHOR -- create grid --
-  function CreateGrid(columns, rows) {
-    // Create the appropriate number of rows
-    let tbl = document.getElementById("grid-background");
-    for (let i = 0; i < rows; i++) {
-      let _row = document.createElement("tr");
-      _row.id = `row${i}`;
-      _row.width = cellWidth;
-      _row.height = cellWidth;
-      tbl.appendChild(_row);
-
-      // Create the appropruate number of columns
-      let _rowWidth = document.getElementById(`row${i}`);
-      for (let j = 0; j < columns; j++) {
-        let _cell = document.createElement("td");
-        _cell.classList.add(`cell-${i}-${j}`);
-        _rowWidth.appendChild(_cell);
-      }
-    }
-  }
 
   // ANCHOR -- Window Resize --
   window.onresize = function () {
@@ -47,18 +44,20 @@ window.addEventListener("load", () => {
   const cell = document.querySelectorAll("td");
   cell.forEach(function (el) {
     //   ANCHOR -- Mouse Over Effect --
-    if (mouveOverEffect) el.addEventListener("mouseover", mouseEnterEffect);
+    if (mouveOverEffect) {
+      console.log("mouseover event activated");
+      el.addEventListener("mouseover", mouseEnterEffect);
+      el.addEventListener("mouseout", mouseOutEffect);
+    }
 
     //   ANCHOR -- Mouse out Effect --
-    if (mouveOverEffect) el.addEventListener("mouseout", mouseOutEffect);
+    // if (mouveOverEffect) el.addEventListener("mouseout", mouseOutEffect);
 
     //   ANCHOR -- Mouse click Effect --
     if (clickEffect) {
       el.addEventListener("click", function () {
-        // console.log(el.classList[0]);
         let _cellRow = el.classList[0].split("-")[1];
         let _cellCol = el.classList[0].split("-")[2];
-        // console.log(_cellRow, _cellCol);
 
         // Cells Above Clicked Cell
         for (let i = _cellRow; i >= 0; i--) {
@@ -90,6 +89,7 @@ window.addEventListener("load", () => {
   //   ANCHOR -- Wave Effect --
   if (waveEffect) waveCellEffect();
 
+  // !SECTION ====================================
   // SECTION -- FUNCTIONS --
 
   // ANCHOR -- Set Grid Size --
@@ -107,15 +107,19 @@ window.addEventListener("load", () => {
         for (let j = 0; j < columns; j++) {
           setTimeout(function () {
             const _cell = document.querySelector(`.cell-${i}-${j}`);
-            _cell.classList.add("td-hover");
+            turnCellOn(_cell);
+            // _cell.classList.add("td-hover");
             setTimeout(function () {
-              _cell.classList.remove("td-hover");
-            }, 500);
-          }, 1000 + 100 * j);
+              turnCellOff(_cell);
+              // _cell.classList.remove("td-hover");
+            }, waveSwell * 1000);
+          }, Math.floor(
+            Math.random() * (waveScatter * 1000) + waveSpeed * 1000 * j
+          ));
         }
       }
       waveCellEffect();
-    }, 7500);
+    }, waveInterval * 1000);
   }
 
   //   ANCHOR -- Random Effect --
@@ -123,14 +127,36 @@ window.addEventListener("load", () => {
     setTimeout(function () {
       const _row = Math.floor(Math.random() * rows);
       const _col = Math.floor(Math.random() * columns);
-      // console.log(_row, _col);
       const _cell = document.querySelector(`.cell-${_row}-${_col}`);
-      _cell.classList.add("td-hover");
+      turnCellOn(_cell);
+      // _cell.classList.add("td-hover");
       setTimeout(function () {
-        _cell.classList.remove("td-hover");
-      }, 500);
+        turnCellOff(_cell);
+        // _cell.classList.remove("td-hover");
+      }, randomSwell * 1000);
       randomCellEffect();
-    }, 10);
+    }, randomInterval * 1000);
+  }
+
+  // ANCHOR -- create grid --
+  function CreateGrid(columns, rows) {
+    // Create the appropriate number of rows
+    let tbl = document.getElementById("grid-background");
+    for (let i = 0; i < rows; i++) {
+      let _row = document.createElement("tr");
+      _row.id = `row${i}`;
+      _row.width = cellWidth;
+      _row.height = cellWidth;
+      tbl.appendChild(_row);
+
+      // Create the appropruate number of columns
+      let _rowWidth = document.getElementById(`row${i}`);
+      for (let j = 0; j < columns; j++) {
+        let _cell = document.createElement("td");
+        _cell.classList.add(`cell-${i}-${j}`);
+        _rowWidth.appendChild(_cell);
+      }
+    }
   }
 
   // ANCHOR -- delete grid --
@@ -142,29 +168,38 @@ window.addEventListener("load", () => {
 
   // ANCHOR -- Mouse Enter Effect --
   function mouseEnterEffect() {
-    console.log("Were here!");
-    this.classList.add("td-hover");
-    const _color = `hsl(${Math.floor(Math.random() * 360)}, 95%, 71%)`;
-    console.log(_color);
-    this.style.border = `1px solid ${_color}`;
+    console.log("mouse enter");
+    turnCellOn(this);
   }
 
   // ANCHOR -- Mouse Out Effect --
   function mouseOutEffect() {
     setTimeout(() => {
-      this.classList.remove("td-hover");
+      turnCellOff(this);
     }, 1000);
   }
 
   //   ANCHOR -- Click Cell Effect --
   function clickCellEffect(cells, cell, speed, delay, i) {
-    console.log("its working!");
     setTimeout(function () {
-      cell.classList.add("td-hover");
+      turnCellOn(cell);
     }, speed * Math.abs(cells - i));
 
     setTimeout(function () {
-      cell.classList.remove("td-hover");
+      turnCellOff(cell);
     }, delay + speed * Math.abs(cells - i));
   }
+
+  // ANCHOR -- Turn Cell On --
+  function turnCellOn(cell) {
+    console.log("cell on");
+    cell.classList.add("td-hover");
+  }
+
+  // ANCHOR -- Turn Cell Off --
+  function turnCellOff(cell) {
+    cell.classList.remove("td-hover");
+  }
 });
+
+// !SECTION ====================================

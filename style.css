@@ -5,17 +5,17 @@ ANCHOR Variables
 */
 :root {
   --background-color: hsl(0, 0%, 15%);
-  --border-radius: 25%;
+  --border-radius: 0%;
   --border-size: 2px;
-  --border-color: hsla(0, 0%, 10%, 0.5);
+  --border-color: hsl(0, 0%, 21%);
   --border-type: solid;
   --transition: all 1s ease;
   --transition-border-size: 2px;
   --transition-border-color: hsl(293, 95%, 71%);
   --transition-border-type: solid;
-  /* --transition-background-color: hsl(0, 0%, 15%); */
-  --transition-background-color: hsla(293, 95%, 71%, 0.5);
-  --transition-border-radius: 50%;
+  --transition-background-color: hsl(0, 0%, 15%);
+  /* --transition-background-color: hsla(293, 95%, 71%, 0.5); */
+  --transition-border-radius: 0%;
   --background-opacity: 0;
 }
 
