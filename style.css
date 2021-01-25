@@ -9,13 +9,13 @@ ANCHOR Variables
   --border-size: 2px;
   --border-color: hsl(0, 0%, 21%);
   --border-type: solid;
-  --transition: all 1s ease;
-  --transition-border-size: 2px;
-  --transition-border-color: hsl(293, 95%, 71%);
-  --transition-border-type: solid;
-  --transition-background-color: hsl(0, 0%, 15%);
-  /* --transition-background-color: hsla(293, 95%, 71%, 0.5); */
-  --transition-border-radius: 0%;
+  --trans: all 1s ease;
+  --trans-border-size: 2px;
+  --trans-border-color: hsl(293, 95%, 71%);
+  --trans-border-type: solid;
+  --trans-background-color: hsl(0, 0%, 15%);
+  /* --trans-background-color: hsla(293, 95%, 71%, 0.5); */
+  --trans-border-radius: 0%;
   --background-opacity: 0;
 }
 
@@ -43,13 +43,16 @@ ANCHOR Variables
 td {
   border-radius: var(--border-radius);
   border: var(--border-size) var(--border-type) var(--border-color);
-  transition: var(--transition);
+  transition: var(--trans);
 }
 
 .td-hover {
   transform: translateY(-20%);
-  border-radius: var(--transition-border-radius);
-  background: var(--transition-background-color);
-  border: var(--transition-border-size) var(--transition-border-type)
-    var(--transition-border-color);
+  border-radius: var(--trans-border-radius);
+  background: var(--trans-background-color);
+  border: var(--trans-border-size) var(--trans-border-type)
+    var(--trans-border-color);
+}
+
+.animating {
 }

@@ -2,7 +2,7 @@ window.addEventListener("load", () => {
   // ANCHOR -- Options List --
 
   // general Options
-  const cellWidth = 200; // pixels
+  const cellWidth = 100; // pixels
   const clickCellSpeed = 50; // miliseconds
   const clickCellDelay = 500; // miliseconds
 
@@ -13,15 +13,15 @@ window.addEventListener("load", () => {
   const clickEffect = false;
 
   // Random Options
-  const randomEffect = true;
-  const randomInterval = 0.05; // seconds
+  const randomEffect = false;
+  const randomInterval = 0.1; // seconds
   const randomSwell = 0.4; // seconds
 
   // Wave Options
-  const waveEffect = false; // true/false
+  const waveEffect = true; // true/false
   const waveInterval = 7.5; // seconds
-  const waveSwell = 0.4; // seconds
-  const waveSpeed = 0.2; // seconds
+  const waveSwell = 0.75; // seconds
+  const waveSpeed = 0.4; // seconds
   const waveScatter = 1; // seconds
 
   // ColorOptions
@@ -43,6 +43,20 @@ window.addEventListener("load", () => {
   //   SECTION -- Cell Event Listeners --
   const cell = document.querySelectorAll("td");
   cell.forEach(function (el) {
+    // ANCHOR -- animation end --
+    // $(el).on("webkitAnimationEnd", function () {
+    //   console.log("animtaiontEnd triggered!!");
+    //   animationEnd();
+    // });
+    // el.addEventListener("animationend", function () {
+    //   console.log("animation ended");
+    // });
+
+    // el.onanimationend = () => {
+    //   console.log("yoyoyoy");
+    //   animationEnd();
+    // };
+
     //   ANCHOR -- Mouse Over Effect --
     if (mouveOverEffect) {
       console.log("mouseover event activated");
@@ -91,6 +105,9 @@ window.addEventListener("load", () => {
 
   // !SECTION ====================================
   // SECTION -- FUNCTIONS --
+
+  if (randomColors) {
+  }
 
   // ANCHOR -- Set Grid Size --
   function setGridSize() {
@@ -192,13 +209,37 @@ window.addEventListener("load", () => {
 
   // ANCHOR -- Turn Cell On --
   function turnCellOn(cell) {
-    console.log("cell on");
-    cell.classList.add("td-hover");
+    if (!cell.classList.contains("animating")) {
+      console.log("cell on");
+      cell.classList.add("td-hover");
+      if (randomColors) setRandomColor(cell);
+    }
   }
 
   // ANCHOR -- Turn Cell Off --
   function turnCellOff(cell) {
     cell.classList.remove("td-hover");
+    if (randomColors) resetColor(cell);
+  }
+
+  // function animationEnd() {
+  //   console.log("toggle animating");
+  //   this.classList.toggleClass("animating");
+  // }
+
+  // ANCHOR -- Set Random Color --
+  function setRandomColor(cell) {
+    // hsl(293, 95%, 71%);
+    const hue = Math.floor(Math.random() * 360);
+    const col1 = Math.floor(Math.random() * 100);
+    const col2 = Math.floor(Math.random() * 100);
+    // cell.style.borderColor = `hsl(${hue},${col1}%,${col2}%)`;
+    cell.style.borderColor = `hsl(${hue},95%,71%)`;
+  }
+
+  // ANCHOR -- Set Random Color --
+  function resetColor(cell) {
+    cell.style.borderColor = `hsl(0, 0%, 21%)`;
   }
 });
 
