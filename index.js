@@ -2,17 +2,11 @@ window.addEventListener("load", () => {
   // ANCHOR -- Options List --
 
   // general Options
-  const cellWidth = 100; // pixels
+  const cellWidth = 50; // pixels
   const borderSize = 1;
   const borderRadius = 0; // percentage
-  const borderColor = [0, 0, 21, 1]; // [hue, saturation, lightness, opacity]
+  const borderColor = [0, 0, 20, 1]; // [hue, saturation, lightness, opacity]
   const backgroundColor = [0, 0, 15, 1]; // [hue, saturation, lightness, opcaity]
-  const cellBounceX = 0; // percentage (transform: translateX(0))
-  const cellBounceY = -20; // percentage (transform: translateY(-20%))
-
-  const transBorderRadius = 0;
-  const transBordorColor = [293, 95, 71, 1];
-  const transBackgroundColor = [293, 95, 71, 0.5];
 
   // Mouseover Options
   const mouseOverEffect = false;
@@ -23,12 +17,12 @@ window.addEventListener("load", () => {
   const clickSwell = 0.5; // seconds
 
   // Random Options
-  const randomEffect = false;
+  const randomEffect = true;
   const randomInterval = 0.1; // seconds
-  const randomSwell = 0.4; // seconds
+  const randomSwell = 1; // seconds
 
   // Wave Options
-  const waveEffect = true; // true/false
+  const waveEffect = false; // true/false
   const waveInterval = 7.5; // seconds
   const waveSwell = 0.75; // seconds
   const waveSpeed = 0.4; // seconds
@@ -39,16 +33,19 @@ window.addEventListener("load", () => {
   const randomHue = true;
   const randomSaturation = false;
   const randomLightness = false;
-  // const setColor = [293, 95, 71];
-  const hue = 293;
-  const saturation = 95;
-  const lightness = 71;
+  const randomOpacity = false;
+  const transBorderColor = [0, 95, 71, 1]; // [hue, saturation, lightness, opacity]
+  const transBackgroundColor = [0, 95, 71, 0.05]; // [hue, saturation, lightness, opacity]
 
   // ANCHOR -- Initialize Grid --
   let width, height, columns, rows;
   setGridSize();
   console.log(rows, columns);
   CreateGrid(columns, rows);
+
+  // ANCHOR -- Initialize Global Cell Variables --
+  // document.documentElement.style.cssText = `--trans-cell-bounceY: ${cellBounceY}%`;
+  // document.documentElement.style.cssText = `--trans-cell-bounceX: ${cellBounceX}%`;
 
   // ANCHOR -- Window Resize --
   window.onresize = function () {
@@ -60,20 +57,6 @@ window.addEventListener("load", () => {
   //   SECTION -- Cell Event Listeners --
   const cell = document.querySelectorAll("td");
   cell.forEach(function (el) {
-    // ANCHOR -- animation end --
-    // $(el).on("webkitAnimationEnd", function () {
-    //   console.log("animtaiontEnd triggered!!");
-    //   animationEnd();
-    // });
-    // el.addEventListener("animationend", function () {
-    //   console.log("animation ended");
-    // });
-
-    // el.onanimationend = () => {
-    //   console.log("yoyoyoy");
-    //   animationEnd();
-    // };
-
     //   ANCHOR -- Mouse Over Effect --
     if (mouseOverEffect) {
       console.log("mouseover event activated");
@@ -87,6 +70,7 @@ window.addEventListener("load", () => {
     //   ANCHOR -- Mouse click Effect --
     if (clickEffect) {
       el.addEventListener("click", function () {
+        console.log("click event triggered");
         const _cellRow = el.classList[0].split("-")[1];
         const _cellCol = el.classList[0].split("-")[2];
 
@@ -159,14 +143,16 @@ window.addEventListener("load", () => {
   //   ANCHOR -- Random Effect --
   function randomCellEffect() {
     setTimeout(function () {
+      // choose random cell
       const _row = Math.floor(Math.random() * rows);
       const _col = Math.floor(Math.random() * columns);
       const _cell = document.querySelector(`.cell-${_row}-${_col}`);
+      // turn on chosen cell
       turnCellOn(_cell);
-      // _cell.classList.add("td-hover");
       setTimeout(function () {
+        // turn chosen cell off after the swell time is up
+        // console.log("turn cell off");
         turnCellOff(_cell);
-        // _cell.classList.remove("td-hover");
       }, randomSwell * 1000);
       randomCellEffect();
     }, randomInterval * 1000);
@@ -208,9 +194,7 @@ window.addEventListener("load", () => {
 
   // ANCHOR -- Mouse Out Effect --
   function mouseOutEffect() {
-    setTimeout(() => {
-      turnCellOff(this);
-    }, 1000);
+    turnCellOff(this);
   }
 
   //   ANCHOR -- Click Cell Effect --
@@ -226,60 +210,75 @@ window.addEventListener("load", () => {
 
   // ANCHOR -- Turn Cell On --
   function turnCellOn(cell) {
-    if (!cell.classList.contains("animating")) {
-      console.log("cell on");
-      cell.classList.add("td-hover");
-      if (randomColors) setRandomColor(cell);
-    }
+    // if (!cell.classList.contains("animating")) {
+    cell.classList.add("td-hover");
+    setColor(cell);
+    // }
   }
 
   // ANCHOR -- Turn Cell Off --
   function turnCellOff(cell) {
+    resetColor(cell);
     cell.classList.remove("td-hover");
-    if (randomColors) resetColor(cell);
   }
-
-  // function animationEnd() {
-  //   console.log("toggle animating");
-  //   this.classList.toggleClass("animating");
-  // }
 
   // ANCHOR -- Set Color --
   function setColor(cell) {
     if (randomColors) {
-      setRamdonColor(cell);
+      setRandomColor(cell);
     } else {
-      cell.style.borderColor = `hsl(${hue},${saturation}%,${lightness}%)`;
+      cell.style.borderColor = `hsl(${transBorderColor[0]},${transBorderColor[1]}%,${transBorderColor[2]}%, ${transBorderColor[3]})`;
+      cell.style.backgroundColor = `hsl(${transBackgroundColor[0]},${transBackgroundColor[1]}%,${transBackgroundColor[2]}%, ${transBackgroundColor[3]})`;
     }
   }
   // ANCHOR -- Set Random Color --
   function setRandomColor(cell) {
-    // hsl(293, 95%, 71%);
-    let _hue, _saturation, _lightness;
+    let _borderHue, _borderSaturation, _borderLightness, _borderOpacity;
+    let _backgroundHue,
+      _backgroundSaturation,
+      _backgroundLightness,
+      _backgroundOpacity;
+    // Set Hue
     if (randomHue) {
-      _hue = Math.floor(Math.random() * 360);
+      _borderHue = Math.floor(Math.random() * 360);
+      _backgroundHue = _borderHue;
     } else {
-      _hue = hue;
+      _borderHue = transBorderColor[0];
+      _backgroundHue = transBackgroundColor[0];
     }
+    // Set Saturation
     if (randomSaturation) {
-      _saturation = Math.floor(Math.random() * 100);
+      _borderSaturation = Math.floor(Math.random() * 100);
+      _backgroundSaturation = _borderSaturation;
     } else {
-      _saturation = saturation;
+      _borderSaturation = transBorderColor[1];
+      _backgroundSaturation = transBackgroundColor[1];
     }
+    // Set Lightness
     if (randomLightness) {
-      _lightness = Math.floor(Math.random() * 100);
+      _borderLightness = Math.floor(Math.random() * 100);
+      _backgroundLightness = _borderLightness;
     } else {
-      _lightness = lightness;
+      _borderLightness = transBorderColor[2];
+      _backgroundLightness = transBackgroundColor[2];
     }
-    // const saturation = Math.floor(Math.random() * 100);
-    // const lightness = Math.floor(Math.random() * 100);
-    // cell.style.borderColor = `hsl(${hue},95%,71%)`;
-    cell.style.borderColor = `hsl(${_hue},${_saturation}%,${_lightness}%)`;
+    // Set Opacity
+    if (randomOpacity) {
+      _borderOpacity = Math.random();
+      _backgroundOpacity = _borderOpacity;
+    } else {
+      _borderOpacity = transBorderColor[3];
+      _backgroundOpacity = transBackgroundColor[3];
+    }
+    // Apply Selected Colors
+    cell.style.borderColor = `hsl(${_borderHue},${_borderSaturation}%,${_borderLightness}%, ${_borderOpacity})`;
+    cell.style.backgroundColor = `hsl(${_backgroundHue},${_backgroundSaturation}%,${_backgroundLightness}%, ${_backgroundOpacity})`;
   }
 
   // ANCHOR -- Reset Color --
   function resetColor(cell) {
-    cell.style.borderColor = `hsl(0, 0%, 21%)`;
+    cell.style.borderColor = `hsl(${borderColor[0]}, ${borderColor[1]}%, ${borderColor[2]}%, ${borderColor[3]})`;
+    cell.style.backgroundColor = `hsl(${backgroundColor[0]}, ${backgroundColor[1]}%, ${backgroundColor[2]}%, ${backgroundColor[3]})`;
   }
 });
 
@@ -287,7 +286,5 @@ window.addEventListener("load", () => {
 
 // TODO
 /*
-- fix the mouseover and click functions
 - add a HUD for changing the options? *this could take awhile*
-- fix animation end toggling
 */
