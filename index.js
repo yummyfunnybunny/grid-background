@@ -15,7 +15,7 @@ window.addEventListener("load", () => {
   const transBackgroundColor = [293, 95, 71, 0.5];
 
   // Mouseover Options
-  const mouveOverEffect = false;
+  const mouseOverEffect = false;
 
   // Click Options
   const clickEffect = false;
@@ -75,14 +75,14 @@ window.addEventListener("load", () => {
     // };
 
     //   ANCHOR -- Mouse Over Effect --
-    if (mouveOverEffect) {
+    if (mouseOverEffect) {
       console.log("mouseover event activated");
       el.addEventListener("mouseover", mouseEnterEffect);
       el.addEventListener("mouseout", mouseOutEffect);
     }
 
     //   ANCHOR -- Mouse out Effect --
-    // if (mouveOverEffect) el.addEventListener("mouseout", mouseOutEffect);
+    // if (mouseOverEffect) el.addEventListener("mouseout", mouseOutEffect);
 
     //   ANCHOR -- Mouse click Effect --
     if (clickEffect) {
