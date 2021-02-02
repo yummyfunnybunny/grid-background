@@ -20,6 +20,7 @@ ANCHOR Variables
   --trans-cell-bounceX: 0%;
   --trans-border-radius: 25%;
   --background-opacity: 0.5;
+  --overlay-color: hsl(0, 0%, 0%, 0.5);
 }
 
 * {
@@ -28,21 +29,42 @@ ANCHOR Variables
   box-sizing: border-box;
 }
 
-.grid-background {
+.grid {
   /* border: 1px solid red; */
   width: 100%;
   height: 100vh;
   background: var(--background-color);
   overflow: hidden;
+  position: relative;
 }
-/* .grid-background::before {
-  content: "";
+
+.content {
+  /* border: 2px solid white; */
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+.grid-overlay {
+  /* border: 2px solid white; */
+  top: 0;
+  left: 0;
   position: absolute;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, var(--background-opacity));
-  z-index: 0;
-} */
+  background: var(--overlay-color);
+  z-index: 5;
+}
+h1 {
+  font-size: 5rem;
+  font-weight: bold;
+}
 
 td {
   border-radius: var(--border-radius);

@@ -2,14 +2,14 @@ window.addEventListener("load", () => {
   // ANCHOR -- Options List --
 
   // general Options
-  const cellWidth = 50; // pixels
+  const cellWidth = 100; // pixels
   const borderSize = 1;
   const borderRadius = 0; // percentage
   const borderColor = [0, 0, 20, 1]; // [hue, saturation, lightness, opacity]
   const backgroundColor = [0, 0, 15, 1]; // [hue, saturation, lightness, opcaity]
 
   // Mouseover Options
-  const mouseOverEffect = false;
+  const mouseOverEffect = true;
 
   // Click Options
   const clickEffect = false;
@@ -17,12 +17,12 @@ window.addEventListener("load", () => {
   const clickSwell = 0.5; // seconds
 
   // Random Options
-  const randomEffect = true;
+  const randomEffect = false;
   const randomInterval = 0.1; // seconds
   const randomSwell = 1; // seconds
 
   // Wave Options
-  const waveEffect = false; // true/false
+  const waveEffect = true; // true/false
   const waveInterval = 7.5; // seconds
   const waveSwell = 0.75; // seconds
   const waveSpeed = 0.4; // seconds
@@ -37,11 +37,15 @@ window.addEventListener("load", () => {
   const transBorderColor = [0, 95, 71, 1]; // [hue, saturation, lightness, opacity]
   const transBackgroundColor = [0, 95, 71, 0.05]; // [hue, saturation, lightness, opacity]
 
+  // Grid Overlay Options
+  const overlayColor = [0, 0, 0, 0.5]; // [hue, saturation, lightness, opacity]
+
   // ANCHOR -- Initialize Grid --
   let width, height, columns, rows;
   setGridSize();
   console.log(rows, columns);
   CreateGrid(columns, rows);
+  setOverlay();
 
   // ANCHOR -- Initialize Global Cell Variables --
   // document.documentElement.style.cssText = `--trans-cell-bounceY: ${cellBounceY}%`;
@@ -107,13 +111,17 @@ window.addEventListener("load", () => {
   // !SECTION ====================================
   // SECTION -- FUNCTIONS --
 
-  if (randomColors) {
+  // ANCHOR -- Set Grid Overlay --
+  function setOverlay() {
+    console.log(`running setOverlay: ${overlayColor}`);
+    const overlay = document.querySelector(".grid-overlay");
+    overlay.style.backgroundColor = `hsl(${overlayColor[0]},${overlayColor[1]}%,${overlayColor[2]}%, ${overlayColor[3]})`;
   }
 
   // ANCHOR -- Set Grid Size --
   function setGridSize() {
-    width = document.getElementById("grid-background").clientWidth;
-    height = document.getElementById("grid-background").clientHeight;
+    width = document.getElementById("grid").clientWidth;
+    height = document.getElementById("grid").clientHeight;
     columns = Math.ceil(width / cellWidth);
     rows = Math.ceil(height / cellWidth);
   }
@@ -161,7 +169,7 @@ window.addEventListener("load", () => {
   // ANCHOR -- create grid --
   function CreateGrid(columns, rows) {
     // Create the appropriate number of rows
-    let tbl = document.getElementById("grid-background");
+    let tbl = document.getElementById("grid");
     for (let i = 0; i < rows; i++) {
       let _row = document.createElement("tr");
       _row.id = `row${i}`;
@@ -182,7 +190,7 @@ window.addEventListener("load", () => {
   // ANCHOR -- delete grid --
   function deleteGrid() {
     console.log("delete grid");
-    const gridBackground = document.getElementById("grid-background");
+    const gridBackground = document.getElementById("grid");
     gridBackground.innerHTML = "";
   }
 
