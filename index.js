@@ -3,10 +3,12 @@ window.addEventListener("load", () => {
 
   // general Options
   const cellWidth = 100; // pixels
-  const borderSize = 1;
+  const borderSize = 1; //pixels
   const borderRadius = 0; // percentage
   const borderColor = [0, 0, 20, 1]; // [hue, saturation, lightness, opacity]
   const backgroundColor = [0, 0, 15, 1]; // [hue, saturation, lightness, opcaity]
+  const transitionSpeed = 1; // seconds - dictates how long the cell transition takes
+  const transitionPattern = "ease-in";
 
   // Mouseover Options
   const mouseOverEffect = true;
@@ -18,15 +20,15 @@ window.addEventListener("load", () => {
 
   // Random Options
   const randomEffect = false;
-  const randomInterval = 0.1; // seconds
-  const randomSwell = 1; // seconds
+  const randomInterval = 0.1; // seconds - time between next cell activation
+  const randomUpTime = 1; // seconds - how long each cell sits in the up position before going back down
 
   // Wave Options
   const waveEffect = true; // true/false
-  const waveInterval = 7.5; // seconds
-  const waveSwell = 0.75; // seconds
-  const waveSpeed = 0.4; // seconds
-  const waveScatter = 1; // seconds
+  const waveInterval = 7.5; // seconds - time between begining of each wave
+  const waveUpTime = 0.75; // seconds - how long each cell sits in the up position before going back down
+  const waveSpeed = 0.4; // seconds - how fast the wave moves
+  const waveScatter = 0.5; // seconds - how scattered or tight the wave is (1 = default, higher = more scattered, lower = tighter)
 
   // ColorOptions
   const randomColors = true;
@@ -46,6 +48,10 @@ window.addEventListener("load", () => {
   console.log(rows, columns);
   CreateGrid(columns, rows);
   setOverlay();
+  document.documentElement.style.setProperty(
+    "--trans",
+    `all ${transitionSpeed}s ${transitionPattern}`
+  );
 
   // ANCHOR -- Initialize Global Cell Variables --
   // document.documentElement.style.cssText = `--trans-cell-bounceY: ${cellBounceY}%`;
@@ -134,11 +140,9 @@ window.addEventListener("load", () => {
           setTimeout(function () {
             const _cell = document.querySelector(`.cell-${i}-${j}`);
             turnCellOn(_cell);
-            // _cell.classList.add("td-hover");
             setTimeout(function () {
               turnCellOff(_cell);
-              // _cell.classList.remove("td-hover");
-            }, waveSwell * 1000);
+            }, waveUpTime * 1000);
           }, Math.floor(
             Math.random() * (waveScatter * 1000) + waveSpeed * 1000 * j
           ));
@@ -161,7 +165,7 @@ window.addEventListener("load", () => {
         // turn chosen cell off after the swell time is up
         // console.log("turn cell off");
         turnCellOff(_cell);
-      }, randomSwell * 1000);
+      }, randomUpTime * 1000);
       randomCellEffect();
     }, randomInterval * 1000);
   }
@@ -182,6 +186,8 @@ window.addEventListener("load", () => {
       for (let j = 0; j < columns; j++) {
         let _cell = document.createElement("td");
         _cell.classList.add(`cell-${i}-${j}`);
+        _cell.style.borderRadius = `${borderRadius}%`;
+        _cell.style.border = `${borderSize}px solid hsla(${borderColor[0]},${borderColor[1]}%,${borderColor[2]}%,${borderColor[3]})`;
         _rowWidth.appendChild(_cell);
       }
     }

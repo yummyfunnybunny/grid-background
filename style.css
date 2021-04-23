@@ -5,13 +5,13 @@ ANCHOR Variables
 */
 :root {
   /* starting variables */
-  --border-radius: 25%;
+  /* --border-radius: 25%; */
   --border-size: 1px;
   --background-color: hsl(0, 0%, 15%);
   --border-color: hsl(0, 0%, 20%);
   --border-type: solid;
   /* transition variables */
-  --trans: all 1s ease;
+  --trans: all 0.5s ease-in;
   --trans-border-size: 1px;
   --trans-border-color: hsl(293, 95%, 71%);
   --trans-border-type: solid;
