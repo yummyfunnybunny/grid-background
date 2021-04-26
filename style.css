@@ -1,45 +1,10 @@
-/*
-=============== 
-ANCHOR Variables
-===============
-*/
-:root {
-  /* starting variables */
-  /* --border-radius: 25%; */
-  --border-size: 1px;
-  --background-color: hsl(0, 0%, 15%);
-  --border-color: hsl(0, 0%, 20%);
-  --border-type: solid;
-  /* transition variables */
-  --trans: all 0.5s ease-in;
-  --trans-border-size: 1px;
-  --trans-border-color: hsl(293, 95%, 71%);
-  --trans-border-type: solid;
-  --trans-background-color: hsl(0, 0%, 15%);
-  --trans-cell-bounceY: -20%;
-  --trans-cell-bounceX: 0%;
-  --trans-border-radius: 25%;
-  --background-opacity: 0.5;
-  --overlay-color: hsl(0, 0%, 0%, 0.5);
-}
-
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
 
-.grid {
-  /* border: 1px solid red; */
-  width: 100%;
-  height: 100vh;
-  background: var(--background-color);
-  overflow: hidden;
-  position: relative;
-}
-
 .content {
-  /* border: 2px solid white; */
   position: fixed;
   left: 50%;
   top: 50%;
@@ -51,31 +16,42 @@ ANCHOR Variables
   justify-content: center;
   color: white;
 }
-.grid-overlay {
-  /* border: 2px solid white; */
-  top: 0;
-  left: 0;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: var(--overlay-color);
-  z-index: 5;
-}
+
 h1 {
   font-size: 5rem;
   font-weight: bold;
 }
 
-td {
-  border-radius: var(--border-radius);
-  border: var(--border-size) var(--border-type) var(--border-color);
-  transition: var(--trans);
+.td-active {
+  transform: translate(0, -20%);
+  border-radius: 25%;
+  background: hsl(0, 0%, 15%);
+  border: 1px solid hsl(293, 95%, 71%);
 }
 
-.td-hover {
-  transform: translate(var(--trans-cell-bounceX), var(--trans-cell-bounceY));
-  border-radius: var(--trans-border-radius);
-  background: var(--trans-background-color);
-  border: var(--trans-border-size) var(--trans-border-type)
-    var(--trans-border-color);
-}
+/* .grid-effect-area { */
+/* border: 1px solid red; */
+/* width: 100%;
+  height: 100vh;
+  background: var(--background-color);
+  overflow: hidden;
+  position: relative; */
+/* } */
+
+/* .grid-overlay { */
+/* border: 2px solid white; */
+/* top: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--overlay-color);
+  z-index: 5; */
+/* } */
+
+/* td { */
+/* border-radius: var(--border-radius); */
+/* border: var(--border-size) var(--border-type) var(--border-color); */
+/* transition: var(--trans); */
+/* transition: all 0.5s cubic; */
+/* } */

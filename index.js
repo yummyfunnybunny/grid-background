@@ -1,304 +1,388 @@
-window.addEventListener("load", () => {
-  // ANCHOR -- Options List --
+const gribBackground = () => {
+  // make sure window is loaded before running the code
+  window.addEventListener("load", () => {
+    // ANCHOR -- Element Selectors
+    const $gridEffectArea = document.getElementById("gridEffectArea");
 
-  // general Options
-  const cellWidth = 100; // pixels
-  const borderSize = 1; //pixels
-  const borderRadius = 0; // percentage
-  const borderColor = [0, 0, 20, 1]; // [hue, saturation, lightness, opacity]
-  const backgroundColor = [0, 0, 15, 1]; // [hue, saturation, lightness, opcaity]
-  const transitionSpeed = 1; // seconds - dictates how long the cell transition takes
-  const transitionPattern = "ease-in";
+    // ANCHOR -- FUNCTIONS
+    const setGrid = (grid, cellWidth, color) => {
+      // Set styling for gridEffectArea
+      $gridEffectArea.style.width = "100%";
+      $gridEffectArea.style.height = "100vh";
+      $gridEffectArea.style.overflow = "hidden";
+      $gridEffectArea.style.position = "relative";
+      $gridEffectArea.style.backgroundColor = `hsl(${color.h},${color.s}%,${color.l}%, ${color.o})`;
 
-  // Mouseover Options
-  const mouseOverEffect = true;
+      // get the width and height of the grid display
+      gridSettings.width = $gridEffectArea.clientWidth;
+      gridSettings.height = $gridEffectArea.clientHeight;
 
-  // Click Options
-  const clickEffect = false;
-  const clickSpeed = 0.05; // seconds
-  const clickSwell = 0.5; // seconds
+      // calculate the number of columns and rows based on the cell size in general options
+      grid.columns = Math.ceil(grid.width / cellWidth);
+      grid.rows = Math.ceil(grid.height / cellWidth);
+    };
 
-  // Random Options
-  const randomEffect = false;
-  const randomInterval = 0.1; // seconds - time between next cell activation
-  const randomUpTime = 1; // seconds - how long each cell sits in the up position before going back down
+    const createGrid = (columns, rows) => {
+      // Create the appropriate number of rows
+      for (let i = 0; i < rows; i++) {
+        const _row = document.createElement("tr");
+        _row.id = `row${i}`;
+        _row.width = generalOptions.cellWidth;
+        _row.height = generalOptions.cellWidth;
+        $gridEffectArea.appendChild(_row);
 
-  // Wave Options
-  const waveEffect = true; // true/false
-  const waveInterval = 7.5; // seconds - time between begining of each wave
-  const waveUpTime = 0.75; // seconds - how long each cell sits in the up position before going back down
-  const waveSpeed = 0.4; // seconds - how fast the wave moves
-  const waveScatter = 0.5; // seconds - how scattered or tight the wave is (1 = default, higher = more scattered, lower = tighter)
+        // Create the appropriate number of columns
+        const _rowWidth = document.getElementById(`row${i}`);
+        for (let j = 0; j < columns; j++) {
+          const _cell = document.createElement("td");
+          _cell.classList.add(`cell-${i}-${j}`);
+          _rowWidth.appendChild(_cell);
 
-  // ColorOptions
-  const randomColors = true;
-  const randomHue = true;
-  const randomSaturation = false;
-  const randomLightness = false;
-  const randomOpacity = false;
-  const transBorderColor = [0, 95, 71, 1]; // [hue, saturation, lightness, opacity]
-  const transBackgroundColor = [0, 95, 71, 0.05]; // [hue, saturation, lightness, opacity]
-
-  // Grid Overlay Options
-  const overlayColor = [0, 0, 0, 0.5]; // [hue, saturation, lightness, opacity]
-
-  // ANCHOR -- Initialize Grid --
-  let width, height, columns, rows;
-  setGridSize();
-  console.log(rows, columns);
-  CreateGrid(columns, rows);
-  setOverlay();
-  document.documentElement.style.setProperty(
-    "--trans",
-    `all ${transitionSpeed}s ${transitionPattern}`
-  );
-
-  // ANCHOR -- Initialize Global Cell Variables --
-  // document.documentElement.style.cssText = `--trans-cell-bounceY: ${cellBounceY}%`;
-  // document.documentElement.style.cssText = `--trans-cell-bounceX: ${cellBounceX}%`;
-
-  // ANCHOR -- Window Resize --
-  window.onresize = function () {
-    deleteGrid();
-    setGridSize();
-    CreateGrid(columns, rows);
-  };
-
-  //   SECTION -- Cell Event Listeners --
-  const cell = document.querySelectorAll("td");
-  cell.forEach(function (el) {
-    //   ANCHOR -- Mouse Over Effect --
-    if (mouseOverEffect) {
-      console.log("mouseover event activated");
-      el.addEventListener("mouseover", mouseEnterEffect);
-      el.addEventListener("mouseout", mouseOutEffect);
-    }
-
-    //   ANCHOR -- Mouse out Effect --
-    // if (mouseOverEffect) el.addEventListener("mouseout", mouseOutEffect);
-
-    //   ANCHOR -- Mouse click Effect --
-    if (clickEffect) {
-      el.addEventListener("click", function () {
-        console.log("click event triggered");
-        const _cellRow = el.classList[0].split("-")[1];
-        const _cellCol = el.classList[0].split("-")[2];
-
-        // Cells Above Clicked Cell
-        for (let i = _cellRow; i >= 0; i--) {
-          const _cell = document.querySelector(`.cell-${i}-${_cellCol}`);
-          clickCellEffect(_cellRow, _cell, i);
+          // set styling for each cell
+          _cell.style.borderRadius = generalOptions.cellBorderRadius.inactive;
+          _cell.style.border = `${generalOptions.cellBorderSize} ${generalOptions.cellBorderStyle} hsl(${colorOptions.inactiveColors.border.h}, ${colorOptions.inactiveColors.border.s}%, ${colorOptions.inactiveColors.border.l}%, ${colorOptions.inactiveColors.border.o})`;
+          _cell.style.transition = `all ${generalOptions.effectTime} ${generalOptions.effectSpeedCurve}`;
         }
-        // Cells Below Clicked Cell
-        for (let i = _cellRow; i < rows; i++) {
-          const _cell = document.querySelector(`.cell-${i}-${_cellCol}`);
-          clickCellEffect(_cellRow, _cell, i);
+      }
+    };
+
+    // create and set the grid-overlay into the grid
+    const setOverlay = (color) => {
+      // Do not set overlay if incorrect effectType is set
+      if (
+        generalOptions.effectType === "click" ||
+        generalOptions.effectType === "mouseover"
+      ) {
+        return;
+      }
+      // Create the html to insert
+      const html = `<div class="grid-overlay"></div>`;
+
+      // Insert the html into the gridEffectArea
+      $gridEffectArea.insertAdjacentHTML("afterbegin", html);
+
+      // Set the styling for the overlay
+      const overlay = document.querySelector(".grid-overlay");
+      overlay.style.backgroundColor = `hsl(${color.h},${color.s}%,${color.l}%, ${color.o})`;
+      overlay.style.top = 0;
+      overlay.style.left = 0;
+      overlay.style.position = "absolute";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.zIndex = 5;
+    };
+
+    const deleteGrid = () => {
+      $gridEffectArea.innerHTML = "";
+    };
+
+    const turnCellOn = (cell) => {
+      console.log(cell);
+      cell.classList.add("td-active");
+      setColor(cell, colorOptions.activeColors);
+    };
+
+    const turnCellOff = (cell) => {
+      resetColor(cell, colorOptions.inactiveColors);
+      cell.classList.remove("td-active");
+    };
+
+    const setColor = (cell, colors) => {
+      if (colorOptions.randomColors) {
+        setRandomColor(cell, colorOptions.activeColors);
+      } else {
+        cell.style.borderColor = `hsl(${colors.border.h},${colors.border.s}%,${colors.border.l}%, ${colors.border.o})`;
+        cell.style.backgroundColor = `hsl(${colors.fill.h},${colors.fill.s}%,${colors.fill.l}%, ${colors.fill.o})`;
+      }
+    };
+
+    const getColorValue = (min, max) => {
+      if (!max) return min;
+      const randomNumber = Math.floor(Math.random(max - min) + min);
+      console.log(randomNumber);
+      return randomNumber;
+    };
+
+    const setRandomColor = (cell, colors) => {
+      let borderH, borderS, borderL, borderO;
+      let fillH, fillS, fillL, fillO;
+      // Set Hue
+      if (colorOptions.randomHue) {
+        borderH = Math.floor(Math.random() * 360);
+        fillH = Math.floor(Math.random() * 360);
+      } else {
+        borderH = colors.border.h; //transBorderColor[0];
+        fillH = colors.fill.h; //transBackgroundColor[0];
+      }
+      // Set Saturation
+      if (colorOptions.randomSaturation) {
+        borderS = Math.floor(Math.random() * 100);
+        fillS = Math.floor(Math.random() * 100);
+      } else {
+        borderS = colors.border.s; //transBorderColor[1];
+        fillS = colors.fill.s; //transBackgroundColor[1];
+      }
+      // Set Lightness
+      if (colorOptions.randomLightness) {
+        borderL = Math.floor(Math.random() * 100);
+        fillL = Math.floor(Math.random() * 100);
+      } else {
+        borderL = colors.border.l; //transBorderColor[2];
+        fillL = colors.fill.l; //transBackgroundColor[2];
+      }
+      // Set Opacity
+      if (colorOptions.randomOpacity) {
+        borderO = Math.random();
+        fillO = Math.random();
+      } else {
+        borderO = colors.border.o; //transBorderColor[3];
+        fillO = colors.fill.o; //transBackgroundColor[3];
+      }
+      // Apply Selected Colors
+      cell.style.borderColor = `hsl(${borderH},${borderS}%,${borderL}%, ${borderO})`;
+      cell.style.backgroundColor = `hsl(${fillH},${fillS}%,${fillL}%, ${fillO})`;
+    };
+
+    const resetColor = (cell, color) => {
+      // console.log("resetting");
+      cell.style.borderColor = `hsl(${color.border.h}, ${color.border.s}%, ${color.border.l}%, ${color.border.o})`;
+      cell.style.backgroundColor = `hsl(${color.fill.h}, ${color.fill.s}%, ${color.fill.l}%, ${color.fill.o})`;
+    };
+
+    const clickEffect = (cells, cell, i) => {
+      setTimeout(function () {
+        turnCellOn(cell);
+      }, clickOptions.speed * 1000 * Math.abs(cells - i));
+
+      setTimeout(function () {
+        turnCellOff(cell);
+      }, clickOptions.swell * 1000 +
+        clickOptions.speed * 1000 * Math.abs(cells - i));
+    };
+
+    const mouseEnter = (cell) => {
+      turnCellOn(cell);
+    };
+
+    const mouseOut = (cell) => {
+      setTimeout(function () {
+        turnCellOff(cell);
+      }, mouseOverOptions.swell * 1000);
+    };
+
+    const waveEffect = () => {
+      setTimeout(function () {
+        for (let i = 0; i < gridSettings.rows; i++) {
+          for (let j = 0; j < gridSettings.columns; j++) {
+            setTimeout(function () {
+              const _cell = document.querySelector(`.cell-${i}-${j}`);
+              turnCellOn(_cell);
+              // _cell.classList.add("td-hover");
+              setTimeout(function () {
+                turnCellOff(_cell);
+                // _cell.classList.remove("td-hover");
+              }, waveOptions.swell * 1000);
+            }, Math.floor(
+              Math.random() * (waveOptions.scatter * 1000) +
+                waveOptions.speed * 1000 * j
+            ));
+          }
         }
-        // Cells left of Clicked Cell
-        for (let i = _cellCol; i >= 0; i--) {
-          const _cell = document.querySelector(`.cell-${_cellRow}-${i}`);
-          clickCellEffect(_cellCol, _cell, i);
-        }
-        // Cells right of Clicked Cell
-        for (let i = _cellCol; i < columns; i++) {
-          const _cell = document.querySelector(`.cell-${_cellRow}-${i}`);
-          clickCellEffect(_cellCol, _cell, i);
-        }
-      });
+        waveEffect();
+      }, waveOptions.interval * 1000);
+    };
+
+    const randomEffect = () => {
+      setTimeout(function () {
+        // choose random cell
+        const row = Math.floor(Math.random() * gridSettings.rows);
+        const col = Math.floor(Math.random() * gridSettings.columns);
+        const cell = document.querySelector(`.cell-${row}-${col}`);
+        console.log(cell);
+
+        // turn on chosen cell
+        turnCellOn(cell);
+
+        // turn chosen cell off after the swell time is up
+        setTimeout(function () {
+          turnCellOff(cell);
+        }, randomOptions.swell * 1000);
+
+        // Re-run randomEffect
+        randomEffect();
+      }, randomOptions.interval * 1000);
+    };
+
+    // ================================
+    // ANCHOR -- OPTIONS
+    // ================================
+    const generalOptions = {
+      effectType: "mouseover", // 'random', 'wave', 'click','mouseover',
+      effectTime: "0.5s", // this is the transition time set on cells
+      effectSpeedCurve: "ease-in", // linear, ease, ease-in, ease-out, auto, cubic-beziar
+      cellWidth: 100, // pixels
+      cellBorderSize: "1px", // pixels
+      cellBorderStyle: "solid", // dotted, dashed, solid, double, none
+      cellBorderRadius: {
+        inactive: 0, // string -> pixels or percentage
+        active: "25%", // string -> pixels or percentage
+      },
+      cellBorderRadius: 0, // pixels/percent
+    };
+
+    //   Initialize Grid
+    const gridSettings = {
+      width: 0,
+      height: 0,
+      columns: 0,
+      rows: 0,
+    };
+
+    // Mouseover options
+    const mouseOverOptions = {
+      swell: 0.5,
+    };
+
+    // Click options
+    const clickOptions = {
+      speed: 0.05, // seconds
+      swell: 0.5, // seconds
+    };
+
+    // Random options
+    const randomOptions = {
+      interval: 0.1, // seconds
+      swell: 1, // seconds
+    };
+
+    // Wave Options
+    const waveOptions = {
+      interval: 7.5, // seconds
+      swell: 1, // seconds
+      speed: 0.4, // seconds
+      scatter: 1, // seconds
+    };
+
+    // Color options
+    const colorOptions = {
+      randomColors: true, // Boolean
+      randomHue: true, // Boolean
+      randomSaturation: false, // Boolean
+      randomLightness: false, // Boolean
+      randomOpacity: false, // Boolean
+      inactiveColors: {
+        border: {
+          h: 0,
+          s: 0,
+          l: 20,
+          o: 1,
+        },
+        fill: {
+          h: 0,
+          s: 0,
+          l: 15,
+          o: 1,
+        },
+      },
+      activeColors: {
+        border: {
+          h: 0,
+          s: 95,
+          l: 71,
+          o: 1,
+        },
+        fill: {
+          h: 0,
+          s: 95,
+          l: 71,
+          o: 0.05,
+        },
+      },
+      overlayColor: {
+        h: 0,
+        s: 0,
+        l: 0,
+        o: 0.5,
+      },
+    };
+
+    // width, height, columns, rows;
+    setGrid(
+      gridSettings,
+      generalOptions.cellWidth,
+      colorOptions.inactiveColors.fill
+    );
+    createGrid(gridSettings.columns, gridSettings.rows);
+    setOverlay(colorOptions.overlayColor);
+
+    //   Window Resize
+    window.onresize = () => {
+      deleteGrid();
+      setGrid(
+        gridSettings,
+        generalOptions.cellWidth,
+        colorOptions.inactiveColors.fill
+      );
+      createGrid(gridSettings.columns, gridSettings.rows);
+      setOverlay(colorOptions.overlayColor);
+    };
+
+    // Set Effects
+    const cells = document.querySelectorAll("td");
+    switch (generalOptions.effectType) {
+      case "random":
+        randomEffect();
+        break;
+
+      case "wave":
+        waveEffect();
+        break;
+
+      case "mouseover":
+        cells.forEach(function (cell) {
+          cell.addEventListener("mouseover", () => {
+            console.log(cell);
+            mouseEnter(cell);
+          });
+          cell.addEventListener("mouseout", () => {
+            mouseOut(cell);
+          });
+        });
+        break;
+
+      case "click":
+        // const cells = document.querySelectorAll("td");
+        cells.forEach(function (cell) {
+          cell.addEventListener("click", function () {
+            console.log("click event triggered");
+            const _cellRow = cell.classList[0].split("-")[1];
+            const _cellCol = cell.classList[0].split("-")[2];
+
+            // Cells Above Clicked Cell
+            for (let i = _cellRow; i >= 0; i--) {
+              const _cell = document.querySelector(`.cell-${i}-${_cellCol}`);
+              clickEffect(_cellRow, _cell, i);
+            }
+            // Cells Below Clicked Cell
+            for (let i = _cellRow; i < gridSettings.rows; i++) {
+              const _cell = document.querySelector(`.cell-${i}-${_cellCol}`);
+              clickEffect(_cellRow, _cell, i);
+            }
+            // Cells left of Clicked Cell
+            for (let i = _cellCol; i >= 0; i--) {
+              const _cell = document.querySelector(`.cell-${_cellRow}-${i}`);
+              clickEffect(_cellCol, _cell, i);
+            }
+            // Cells right of Clicked Cell
+            for (let i = _cellCol; i < gridSettings.columns; i++) {
+              const _cell = document.querySelector(`.cell-${_cellRow}-${i}`);
+              clickEffect(_cellCol, _cell, i);
+            }
+          });
+        });
+        break;
     }
   });
+};
 
-  //   ANCHOR -- Random Effect--
-  if (randomEffect) randomCellEffect();
-
-  //   ANCHOR -- Wave Effect --
-  if (waveEffect) waveCellEffect();
-
-  // !SECTION ====================================
-  // SECTION -- FUNCTIONS --
-
-  // ANCHOR -- Set Grid Overlay --
-  function setOverlay() {
-    console.log(`running setOverlay: ${overlayColor}`);
-    const overlay = document.querySelector(".grid-overlay");
-    overlay.style.backgroundColor = `hsl(${overlayColor[0]},${overlayColor[1]}%,${overlayColor[2]}%, ${overlayColor[3]})`;
-  }
-
-  // ANCHOR -- Set Grid Size --
-  function setGridSize() {
-    width = document.getElementById("grid").clientWidth;
-    height = document.getElementById("grid").clientHeight;
-    columns = Math.ceil(width / cellWidth);
-    rows = Math.ceil(height / cellWidth);
-  }
-
-  //   ANCHOR -- Wave Effect --
-  function waveCellEffect() {
-    setTimeout(function () {
-      for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < columns; j++) {
-          setTimeout(function () {
-            const _cell = document.querySelector(`.cell-${i}-${j}`);
-            turnCellOn(_cell);
-            setTimeout(function () {
-              turnCellOff(_cell);
-            }, waveUpTime * 1000);
-          }, Math.floor(
-            Math.random() * (waveScatter * 1000) + waveSpeed * 1000 * j
-          ));
-        }
-      }
-      waveCellEffect();
-    }, waveInterval * 1000);
-  }
-
-  //   ANCHOR -- Random Effect --
-  function randomCellEffect() {
-    setTimeout(function () {
-      // choose random cell
-      const _row = Math.floor(Math.random() * rows);
-      const _col = Math.floor(Math.random() * columns);
-      const _cell = document.querySelector(`.cell-${_row}-${_col}`);
-      // turn on chosen cell
-      turnCellOn(_cell);
-      setTimeout(function () {
-        // turn chosen cell off after the swell time is up
-        // console.log("turn cell off");
-        turnCellOff(_cell);
-      }, randomUpTime * 1000);
-      randomCellEffect();
-    }, randomInterval * 1000);
-  }
-
-  // ANCHOR -- create grid --
-  function CreateGrid(columns, rows) {
-    // Create the appropriate number of rows
-    let tbl = document.getElementById("grid");
-    for (let i = 0; i < rows; i++) {
-      let _row = document.createElement("tr");
-      _row.id = `row${i}`;
-      _row.width = cellWidth;
-      _row.height = cellWidth;
-      tbl.appendChild(_row);
-
-      // Create the appropruate number of columns
-      let _rowWidth = document.getElementById(`row${i}`);
-      for (let j = 0; j < columns; j++) {
-        let _cell = document.createElement("td");
-        _cell.classList.add(`cell-${i}-${j}`);
-        _cell.style.borderRadius = `${borderRadius}%`;
-        _cell.style.border = `${borderSize}px solid hsla(${borderColor[0]},${borderColor[1]}%,${borderColor[2]}%,${borderColor[3]})`;
-        _rowWidth.appendChild(_cell);
-      }
-    }
-  }
-
-  // ANCHOR -- delete grid --
-  function deleteGrid() {
-    console.log("delete grid");
-    const gridBackground = document.getElementById("grid");
-    gridBackground.innerHTML = "";
-  }
-
-  // ANCHOR -- Mouse Enter Effect --
-  function mouseEnterEffect() {
-    console.log("mouse enter");
-    turnCellOn(this);
-  }
-
-  // ANCHOR -- Mouse Out Effect --
-  function mouseOutEffect() {
-    turnCellOff(this);
-  }
-
-  //   ANCHOR -- Click Cell Effect --
-  function clickCellEffect(cells, cell, i) {
-    setTimeout(function () {
-      turnCellOn(cell);
-    }, clickSpeed * 1000 * Math.abs(cells - i));
-
-    setTimeout(function () {
-      turnCellOff(cell);
-    }, clickSwell * 1000 + clickSpeed * 1000 * Math.abs(cells - i));
-  }
-
-  // ANCHOR -- Turn Cell On --
-  function turnCellOn(cell) {
-    // if (!cell.classList.contains("animating")) {
-    cell.classList.add("td-hover");
-    setColor(cell);
-    // }
-  }
-
-  // ANCHOR -- Turn Cell Off --
-  function turnCellOff(cell) {
-    resetColor(cell);
-    cell.classList.remove("td-hover");
-  }
-
-  // ANCHOR -- Set Color --
-  function setColor(cell) {
-    if (randomColors) {
-      setRandomColor(cell);
-    } else {
-      cell.style.borderColor = `hsl(${transBorderColor[0]},${transBorderColor[1]}%,${transBorderColor[2]}%, ${transBorderColor[3]})`;
-      cell.style.backgroundColor = `hsl(${transBackgroundColor[0]},${transBackgroundColor[1]}%,${transBackgroundColor[2]}%, ${transBackgroundColor[3]})`;
-    }
-  }
-  // ANCHOR -- Set Random Color --
-  function setRandomColor(cell) {
-    let _borderHue, _borderSaturation, _borderLightness, _borderOpacity;
-    let _backgroundHue,
-      _backgroundSaturation,
-      _backgroundLightness,
-      _backgroundOpacity;
-    // Set Hue
-    if (randomHue) {
-      _borderHue = Math.floor(Math.random() * 360);
-      _backgroundHue = _borderHue;
-    } else {
-      _borderHue = transBorderColor[0];
-      _backgroundHue = transBackgroundColor[0];
-    }
-    // Set Saturation
-    if (randomSaturation) {
-      _borderSaturation = Math.floor(Math.random() * 100);
-      _backgroundSaturation = _borderSaturation;
-    } else {
-      _borderSaturation = transBorderColor[1];
-      _backgroundSaturation = transBackgroundColor[1];
-    }
-    // Set Lightness
-    if (randomLightness) {
-      _borderLightness = Math.floor(Math.random() * 100);
-      _backgroundLightness = _borderLightness;
-    } else {
-      _borderLightness = transBorderColor[2];
-      _backgroundLightness = transBackgroundColor[2];
-    }
-    // Set Opacity
-    if (randomOpacity) {
-      _borderOpacity = Math.random();
-      _backgroundOpacity = _borderOpacity;
-    } else {
-      _borderOpacity = transBorderColor[3];
-      _backgroundOpacity = transBackgroundColor[3];
-    }
-    // Apply Selected Colors
-    cell.style.borderColor = `hsl(${_borderHue},${_borderSaturation}%,${_borderLightness}%, ${_borderOpacity})`;
-    cell.style.backgroundColor = `hsl(${_backgroundHue},${_backgroundSaturation}%,${_backgroundLightness}%, ${_backgroundOpacity})`;
-  }
-
-  // ANCHOR -- Reset Color --
-  function resetColor(cell) {
-    cell.style.borderColor = `hsl(${borderColor[0]}, ${borderColor[1]}%, ${borderColor[2]}%, ${borderColor[3]})`;
-    cell.style.backgroundColor = `hsl(${backgroundColor[0]}, ${backgroundColor[1]}%, ${backgroundColor[2]}%, ${backgroundColor[3]})`;
-  }
-});
-
-// !SECTION ====================================
-
-// TODO
-/*
-- add a HUD for changing the options? *this could take awhile*
-*/
+module.exports.gridBackground = gribBackground;

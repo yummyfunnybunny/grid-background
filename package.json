@@ -1,0 +1,19 @@
+{
+  "name": "grid-background",
+  "version": "1.0.0",
+  "description": "a fun way to spice up your landing page with a background that dances in a grid of squares",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yummyfunnybunny/grid-background.git"
+  },
+  "author": "Jake Nichols",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yummyfunnybunny/grid-background/issues"
+  },
+  "homepage": "https://github.com/yummyfunnybunny/grid-background#readme"
+}
