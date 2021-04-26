@@ -1,6 +1,6 @@
 {
   "name": "grid-background",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a fun way to spice up your landing page with a background that dances in a grid of squares",
   "main": "index.js",
   "scripts": {
