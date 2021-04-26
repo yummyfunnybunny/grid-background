@@ -15,5 +15,6 @@
   "bugs": {
     "url": "https://github.com/yummyfunnybunny/grid-background/issues"
   },
-  "homepage": "https://github.com/yummyfunnybunny/grid-background#readme"
+  "homepage": "https://github.com/yummyfunnybunny/grid-background#readme",
+  "dependencies": {}
 }

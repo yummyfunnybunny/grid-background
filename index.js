@@ -1,4 +1,4 @@
-const gribBackground = () => {
+const gridBackground = () => {
   // make sure window is loaded before running the code
   window.addEventListener("load", () => {
     // ANCHOR -- Element Selectors
@@ -385,4 +385,4 @@ const gribBackground = () => {
   });
 };
 
-module.exports.gridBackground = gribBackground;
+module.exports.gridBackground = gridBackground;
