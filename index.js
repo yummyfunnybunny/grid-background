@@ -385,5 +385,5 @@ const gridBackground = () => {
   });
 };
 
-module.exports = gridBackground;
+module.exports.gridBackground = gridBackground;
 // export default
